@@ -2,20 +2,20 @@ const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
 const app = express();
-app.use(cors());
+
 const util = require('util');
 const xml2js = require('xml2js');
 const fs = require('fs');
-
 
 // Promisify the exec function for easier use with async/await
 const execAsync = util.promisify(exec);
 const parseXmlAsync = util.promisify(xml2js.parseString);
 
 app.use(express.json());
-
-
-
+app.use(cors({
+  origin: 'https://www.shieldstack.tech/' || 'http://localhost:3000',
+  optionsSuccessStatus: 200
+}));
 // Promisify exec function
 
 app.get('/nmap/scan', async (req, res) => {
@@ -60,14 +60,6 @@ app.get('/nmap/scan', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
-
-
-
-
-
-
 
 app.get('/whois/scan/', (req, res) => {
   const url = req.query.url;
@@ -123,13 +115,6 @@ function parseWhoisResult(result) {
   return parsedResult;
 }
 
-
-
-
-// Function to perform dirsearch
-
-// Set up a 30-second timer to perform dirsearch
-
 // Endpoint to set the target URL for dirsearch
 app.get('/dirsearch/setTarget', (req, res) => {
   const newTargetUrl = req.query.url;
@@ -138,10 +123,7 @@ app.get('/dirsearch/setTarget', (req, res) => {
     return res.status(400).json({ error: 'Please provide a target URL in the "url" query parameter.' });
   }
 
-
   let dirsearchResult = null;
-
-
 
   const dirsearchCommand = `dirsearch -u ${newTargetUrl} --format=json -o ~/result.json`;
 
