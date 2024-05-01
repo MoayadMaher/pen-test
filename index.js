@@ -73,33 +73,33 @@ app.get('/whois/scan/', (req, res) => {
   const url = req.query.url;
 
   if (!url) {
-      res.status(400).json({ error: 'Please provide a URL as a query parameter.' });
-      return;
+    res.status(400).json({ error: 'Please provide a URL as a query parameter.' });
+    return;
   }
 
   runWhois(url)
-      .then(result => {
-          const formattedResult = parseWhoisResult(result);
-          res.json(formattedResult);
-      })
-      .catch(error => {
-          res.status(500).json({ error: 'Error running whois command: ' + error.message });
-      });
+    .then(result => {
+      const formattedResult = parseWhoisResult(result);
+      res.json(formattedResult);
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Error running whois command: ' + error.message });
+    });
 });
 
 function runWhois(url) {
   return new Promise((resolve, reject) => {
-      exec(`whois ${url}`, (error, stdout, stderr) => {
-          if (error) {
-              reject(error);
-              return;
-          }
-          if (stderr) {
-              reject(new Error(stderr));
-              return;
-          }
-          resolve(stdout);
-      });
+    exec(`whois ${url}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      if (stderr) {
+        reject(new Error(stderr));
+        return;
+      }
+      resolve(stdout);
+    });
   });
 }
 
@@ -114,10 +114,10 @@ function parseWhoisResult(result) {
 
   // Parsing each line and adding it to the object
   filteredLines.forEach(line => {
-      const [key, value] = line.split(':').map(part => part.trim());
-      if (key && value) {
-          parsedResult[key] = value;
-      }
+    const [key, value] = line.split(':').map(part => part.trim());
+    if (key && value) {
+      parsedResult[key] = value;
+    }
   });
 
   return parsedResult;
@@ -138,35 +138,35 @@ app.get('/dirsearch/setTarget', (req, res) => {
     return res.status(400).json({ error: 'Please provide a target URL in the "url" query parameter.' });
   }
 
-  
+
   let dirsearchResult = null;
 
-  
 
-    const dirsearchCommand = `dirsearch -u ${newTargetUrl}  --format=json -o json `;
 
-    exec(dirsearchCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Command execution stderr: ${stderr}`);
-        return;
-      }
+  const dirsearchCommand = `dirsearch -u ${newTargetUrl} --format=json -o ~/result.json`;
 
-      console.log(`dirsearch command executed successfully. Output:\n${stdout}`);
+  exec(dirsearchCommand, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Command execution stderr: ${stderr}`);
+      return;
+    }
 
-      try {
-        dirsearchResult = JSON.parse(stdout);
-        // You can do something with the result here if needed
-      } catch (parseError) {
-        console.error(`Error parsing dirsearch output as JSON: ${parseError.message}`);
-      }
+    console.log(`dirsearch command executed successfully. Output:\n${stdout}`);
 
-      // Stop the timer after one execution
-      clearInterval(timer);
-    });
+    try {
+      dirsearchResult = JSON.parse(stdout);
+      // You can do something with the result here if needed
+    } catch (parseError) {
+      console.error(`Error parsing dirsearch output as JSON: ${parseError.message}`);
+    }
+
+    // Stop the timer after one execution
+    clearInterval(timer);
+  });
   ;
 
   res.json({ message: `Target URL set to: ${newTargetUrl}` });
@@ -175,7 +175,7 @@ app.get('/dirsearch/setTarget', (req, res) => {
 
 // Endpoint to get the raw results of the "cat json" command
 app.get('/dirsearch/getRawResults', (req, res) => {
-  const catCommand = 'cat json';
+  const catCommand = 'cat ~/result.json';
 
   exec(catCommand, (error, stdout, stderr) => {
     if (error) {
