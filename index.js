@@ -1,8 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
-const app = express();
-
 const util = require('util');
 const xml2js = require('xml2js');
 const fs = require('fs');
@@ -11,12 +9,13 @@ const fs = require('fs');
 const execAsync = util.promisify(exec);
 const parseXmlAsync = util.promisify(xml2js.parseString);
 
+const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'https://www.shieldstack.tech/' || 'http://localhost:3000',
-  optionsSuccessStatus: 200
+  origin: '*',
+  optionsSuccessStatus: 200,
+
 }));
-// Promisify exec function
 
 app.get('/nmap/scan', async (req, res) => {
   const target = req.query.target;
