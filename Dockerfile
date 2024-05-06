@@ -1,11 +1,9 @@
 # Use an official Node.js runtime as a base image
-FROM ubuntu:22.04
+FROM node:latest
 ARG DEBIAN_FRONTEND=noninteractive
 # Install any dependencies required for your Express app
 RUN  apt-get update && \
     apt-get install -y \
-    nodejs \
-    npm \
     nmap \
     whois \
     dirsearch
@@ -18,10 +16,10 @@ COPY . .
 
 # Install app dependencies
 RUN npm install -g nodemon
-RUN npm install
+RUN npm i
 
 # Expose the port your app will run on
 EXPOSE 3001
 
 # Define the command to run your application
-CMD ["nodemon", "index.js"]
+CMD ["nodemon", "server.js"]
